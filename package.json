@@ -1,0 +1,23 @@
+{
+  "name": "roblox-open-source-accounts",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker for storing Roblox credentials",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theotherboxz/Roblox-open-source-accounts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
+    "typescript": "^5.3.3",
+    "wrangler": "^3.22.4"
+  }
+}

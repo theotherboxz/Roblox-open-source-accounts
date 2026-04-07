@@ -1,0 +1,13 @@
+name = "roblox-credentials-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# KV namespace for storing credentials
+[[kv_namespaces]]
+binding = "CREDENTIALS_STORE"
+id = "credentials_store"
+preview_id = "credentials_store"
+
+# For local development
+[vars]
+# Add any environment variables here if needed
