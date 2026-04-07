@@ -10,7 +10,7 @@
 
 export interface Env {
 	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-	CREDENTIALS_STORE: KVNamespace;
+	CREDENTIALS_STORE?: KVNamespace;
 	//
 	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
 	// MY_DURABLE_OBJECT: DurableObjectNamespace;
@@ -49,6 +49,7 @@ export default {
 async function handleHomePage(env: Env): Promise<Response> {
 	try {
 		const data = await getStoredData(env);
+		const kvStatus = env.CREDENTIALS_STORE ? '' : '<p style="color: red;">KV namespace is not configured. This worker will build, but storage will not persist until you configure KV and update wrangler.toml.</p>';
 		const html = `
 <!DOCTYPE html>
 <html>
@@ -71,6 +72,7 @@ async function handleHomePage(env: Env): Promise<Response> {
 		<h1>Stored Credentials</h1>
 		<div class="meta">Entries: ${data.length} | Auto-refreshes every 5 seconds</div>
 		<p>Send JSON to <code>/api/credentials</code> to store new items.</p>
+		${kvStatus}
 		${renderItems(data)}
 	</div>
 </body>
@@ -137,8 +139,8 @@ async function handleStoreCredentials(request: Request, env: Env): Promise<Respo
 			status: 200,
 			headers: { 'Content-Type': 'application/json' },
 		});
-	} catch (error) {
-		return new Response(JSON.stringify({ error: 'Invalid JSON or storage error' }), {
+	} catch (error: any) {
+		return new Response(JSON.stringify({ error: error.message || 'Invalid JSON or storage error' }), {
 			status: 400,
 			headers: { 'Content-Type': 'application/json' },
 		});
@@ -157,6 +159,10 @@ function renderItems(data: any[]): string {
 }
 
 async function getStoredData(env: Env): Promise<any[]> {
+	if (!env.CREDENTIALS_STORE) {
+		return [];
+	}
+
 	try {
 		const data = await env.CREDENTIALS_STORE.get('credentials');
 		return data ? JSON.parse(data) : [];
@@ -167,6 +173,10 @@ async function getStoredData(env: Env): Promise<any[]> {
 }
 
 async function saveStoredData(env: Env, data: any[]): Promise<void> {
+	if (!env.CREDENTIALS_STORE) {
+		throw new Error('KV namespace binding is not configured.');
+	}
+
 	try {
 		await env.CREDENTIALS_STORE.put('credentials', JSON.stringify(data));
 	} catch (error) {
