@@ -2,14 +2,10 @@ name = "roblox-credentials-api"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
-# KV namespace for storing credentials
-# Add a real namespace ID after creating the KV resource in Cloudflare.
-# Example:
-# [[kv_namespaces]]
-# binding = "CREDENTIALS_STORE"
-# id = "your_real_namespace_id"
-# preview_id = "your_real_namespace_id"
+# Optional: set your Cloudflare account ID here if required for deploy.
+# account_id = "YOUR_ACCOUNT_ID"
 
-# For local development
-[vars]
-# Add any environment variables here if needed
+# This worker stores data in Google Drive instead of Cloudflare KV.
+# Configure the following secrets in your Worker environment:
+#   npx wrangler secret put GOOGLE_SERVICE_ACCOUNT_JSON
+#   npx wrangler secret put GOOGLE_DRIVE_FILE_ID

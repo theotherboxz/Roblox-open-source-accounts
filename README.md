@@ -1,12 +1,12 @@
 # Roblox Credentials API - Cloudflare Worker
 
-A serverless API for storing and retrieving Roblox credentials, deployed on Cloudflare Workers with KV storage.
+A serverless API for storing and retrieving Roblox credentials, deployed on Cloudflare Workers with Google Drive-backed storage.
 
 ## Features
 
 - **REST API**: Clean REST endpoints for credential management
 - **Serverless**: Runs on Cloudflare's edge network
-- **Persistent Storage**: Uses Cloudflare KV for data persistence
+- **Persistent Storage**: Uses Google Drive for data persistence
 - **Web Interface**: Simple web page to view stored credentials
 - **Auto-refresh**: Web page updates every 5 seconds
 
@@ -74,28 +74,24 @@ Health check endpoint.
 wrangler auth login
 ```
 
-### Step 2: Create KV Namespace
+### Step 2: Configure Google Drive storage
+
+This worker stores data in a Google Drive file. You must provide a service account JSON and a Drive file ID.
+
+1. Enable the Google Drive API for your Google Cloud project.
+2. Create a service account and download the JSON credentials.
+3. Create or share a Drive file for the service account to use.
+
+Set the secrets in Cloudflare:
 
 ```bash
-wrangler kv:namespace create "CREDENTIALS_STORE"
+npx wrangler secret put GOOGLE_SERVICE_ACCOUNT_JSON
+npx wrangler secret put GOOGLE_DRIVE_FILE_ID
 ```
 
-This will output something like:
-```
-🌀 Creating namespace with title "roblox-credentials-api-CREDENTIALS_STORE"
-✨ Success!
-Add the following to your wrangler.toml:
-[[kv_namespaces]]
-binding = "CREDENTIALS_STORE"
-id = "1234567890abcdef1234567890abcdef"
-preview_id = "1234567890abcdef1234567890abcdef"
-```
+The Drive file ID should point to a file created or shared with the service account.
 
-### Step 3: Update wrangler.toml
-
-Replace `your_kv_namespace_id_here` in `wrangler.toml` with the actual namespace ID from step 2.
-
-### Step 4: Deploy
+### Step 3: Deploy
 
 ```bash
 npm run deploy
